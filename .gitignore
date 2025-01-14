@@ -10,13 +10,15 @@ tmp/*
 .tmp/*
 cvt-outputs/*
 pretrained/*
-data/*
+data
 
 !assets/*
 !perception/cross_view_transformers/splits/scene_gen.txt
 !.gitkeep
 
-# 
+# mm系列包
+mmcv
+mmdetection
 
 
 # vscode
