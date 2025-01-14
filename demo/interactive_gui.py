@@ -1,3 +1,12 @@
+# import httpx
+
+# proxies = {
+#     "http://": httpx.Proxy("socks5://127.0.0.1:7891"),
+#     "https://": httpx.Proxy("socks5://127.0.0.1:7891"),
+# }
+
+# transport = httpx.AsyncHTTPTransport(proxy=proxies)
+# async_client = httpx.AsyncClient(transport=transport)
 import os
 import sys
 import glob
@@ -107,7 +116,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MagicDrive Editing GUI.")
     parser.add_argument(
         "-m", "--model", help="pretrained model path",
-        default="pretrained/SDv1.5mv-rawbox_2023-09-07_18-39_224x400")
+        default="pretrained/SDv1.5mv-rawbox_2023-09-07_18-39_272x736")
+    # parser.add_argument(
+    #     "-m", "--model", help="pretrained model path",
+    #     default="pretrained")
     parser.add_argument(
         "-d", "--data", help="sample data pattern", default="demo/data/*.pth")
     parser.add_argument(

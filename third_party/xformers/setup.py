@@ -113,11 +113,12 @@ def get_flash_attention_extensions(cuda_version: int, extra_compile_args):
     if torch_version < (1, 12):
         print("You Pytorch version cannot load flash attention for xformers.")
         return []
-    else:
-        raise RuntimeError(
-            "In MagicDrive, we use pytorch 1.10.2, but your version is higher "
-            "than 1.12. If you know what you are doing, please delete this "
-            "error manually!")
+    # 使用最新版pytorch，删除相关报错
+    # else:
+    #     raise RuntimeError(
+    #         "In MagicDrive, we use pytorch 1.10.2, but your version is higher "
+    #         "than 1.12. If you know what you are doing, please delete this "
+    #         "error manually!")
     # Figure out default archs to target
     DEFAULT_ARCHS_LIST = ""
     if cuda_version > 1100:

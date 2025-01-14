@@ -101,11 +101,13 @@ def build_pipe(cfg, device):
     controlnet_path = os.path.join(
         cfg.resume_from_checkpoint, cfg.model.controlnet_dir)
     logging.info(f"Loading controlnet from {controlnet_path} with {model_cls}")
+    # 加载controlnet模型
     controlnet = model_cls.from_pretrained(
         controlnet_path, torch_dtype=weight_dtype)
     controlnet.eval()  # from_pretrained will set to eval mode by default
     pipe_param["controlnet"] = controlnet
-
+    
+    # 加载unet
     if hasattr(cfg.model, "unet_module"):
         unet_cls = load_module(cfg.model.unet_module)
         unet_path = os.path.join(cfg.resume_from_checkpoint, cfg.model.unet_dir)
@@ -114,9 +116,11 @@ def build_pipe(cfg, device):
             unet_path, torch_dtype=weight_dtype)
         unet.eval()
         pipe_param["unet"] = unet
-
+    
+    # cfg.model.pipe_module位于configs/model/SDv1.5mv_rawbox.yaml
     pipe_cls = load_module(cfg.model.pipe_module)
     logging.info(f"Build pipeline with {pipe_cls}")
+    # 加载模型参数
     pipe = pipe_cls.from_pretrained(
         cfg.model.pretrained_model_name_or_path,
         **pipe_param,

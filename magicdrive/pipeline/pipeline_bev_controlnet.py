@@ -110,16 +110,19 @@ class StableDiffusionBEVControlNetPipeline(StableDiffusionControlNetPipeline):
         # we always cast to float32 as this does not cause significant overhead and is compatible with bfloat16
         image = rearrange(image.cpu(), '... c h w -> ... h w c').float().numpy()
         return image
-
+    
+    # NOTE: 代码如何处理bev地图和3Dbbox?
     @torch.no_grad()
     def __call__(
         self,
+        # 表示prompt为str或List[str]
         prompt: Union[str, List[str]],
         image: torch.FloatTensor,
         camera_param: Union[torch.Tensor, None],
         height: int,
         width: int,
         num_inference_steps: int = 50,
+        # 影响图像生成质量和多样性
         guidance_scale: float = 7.5,
         negative_prompt: Optional[Union[str, List[str]]] = None,
         num_images_per_prompt: Optional[int] = 1,
@@ -249,7 +252,7 @@ class StableDiffusionBEVControlNetPipeline(StableDiffusionControlNetPipeline):
             batch_size = len(prompt)
         else:
             batch_size = prompt_embeds.shape[0]
-
+        # TODO: classifier_free_guidance是什么？
         device = self._execution_device
         # here `guidance_scale` is defined analog to the guidance weight `w` of equation (2)
         # of the Imagen paper: https://arxiv.org/pdf/2205.11487.pdf . `guidance_scale = 1`
@@ -300,6 +303,7 @@ class StableDiffusionBEVControlNetPipeline(StableDiffusionControlNetPipeline):
             image = torch.cat(_images)
 
         # 5. Prepare timesteps
+        # 用于推理调度
         self.scheduler.set_timesteps(num_inference_steps, device=device)
         timesteps = self.scheduler.timesteps
 

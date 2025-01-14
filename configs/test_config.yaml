@@ -4,6 +4,7 @@ defaults:
 
 log_root_prefix: ./magicdrive-log/test
 
+# 每次验证使用4个样本？
 runner:
   validation_batch_size: 4
 

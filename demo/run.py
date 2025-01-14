@@ -6,6 +6,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import OmegaConf
 from omegaconf import DictConfig
 from tqdm import tqdm
+import random
 
 # fmt: off
 # bypass annoying warning
@@ -24,14 +25,32 @@ transparent_bg = True
 target_map_size = 400
 # target_map_size = 800
 
-
+# 拼接最终结果，形成2*3的布局
 def output_func(x): return concat_6_views(x)
 # def output_func(x): return concat_6_views(x, oneline=True)
 # def output_func(x): return img_concat_h(*x[:3])
 
+def drop_bboxes(data, drop_ratio):
+    """
+    随机去掉部分边界框
+    :param data: 包含边界框的输入数据
+    :param drop_ratio: 要去掉的边界框比例
+    :return: 去掉部分边界框后的数据
+    """
+    if 'bboxes' not in data:
+        return data
+
+    bboxes = data['bboxes']
+    num_bboxes = len(bboxes)
+    num_to_drop = int(num_bboxes * drop_ratio)
+    indices_to_drop = random.sample(range(num_bboxes), num_to_drop)
+
+    data['bboxes'] = [bbox for i, bbox in enumerate(bboxes) if i not in indices_to_drop]
+    return data
 
 @hydra.main(version_base=None, config_path="../configs",
             config_name="test_config")
+# hydra装饰器加载并解析配置文件，并将参数传递给main函数
 def main(cfg: DictConfig):
     if cfg.debug:
         import debugpy
@@ -41,6 +60,7 @@ def main(cfg: DictConfig):
         print('Attached, continue...')
 
     output_dir = to_absolute_path(cfg.resume_from_checkpoint)
+    # 更新配置变化
     original_overrides = OmegaConf.load(
         os.path.join(output_dir, "hydra/overrides.yaml"))
     current_overrides = HydraConfig.get().overrides.task
@@ -64,6 +84,11 @@ def main(cfg: DictConfig):
         desc="Steps",
     )
     for val_input in val_dataloader:
+        print(val_input['meta_data'].keys())
+         # 随机去掉部分边界框
+        drop_ratio = 0.5  # 设置去掉边界框的比例
+        val_input = drop_bboxes(val_input, drop_ratio)
+
         return_tuples = run_one_batch(cfg, pipe, val_input, weight_dtype,
                                       transparent_bg=transparent_bg,
                                       map_size=target_map_size)

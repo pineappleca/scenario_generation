@@ -107,7 +107,12 @@ class NuScenesDatasetM(NuScenesDataset):
         return cat_ids
 
     def get_data_info(self, index: int) -> Dict[str, Any]:
-        info = self.data_infos[index]
+        # NOTE: 按照https://blog.csdn.net/qq_42390752/article/details/138539067做出修改
+        # info = self.data_infos[index]
+        try:
+            info = self.data_infos[index]
+        except:
+            return None
 
         data = dict(
             token=info["token"],

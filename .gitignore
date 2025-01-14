@@ -1,6 +1,7 @@
 # my stuff
 magicdrive-log
 magicdrive-log/*
+assets/*
 *.png
 *.jpg
 perception/cross_view_transformers/splits/*
@@ -14,6 +15,8 @@ data/*
 !assets/*
 !perception/cross_view_transformers/splits/scene_gen.txt
 !.gitkeep
+
+# 
 
 
 # vscode
@@ -47,6 +50,10 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.tar.bz2
+
+# 地图文件
+*.h5
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

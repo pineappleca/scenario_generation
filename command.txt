@@ -1,0 +1,24 @@
+python demo/run.py resume_from_checkpoint=pretrained/SDv1.5mv-rawbox_2023-09-07_18-39_224x400
+
+# 安装mmcv-full
+pip install mmcv-full==1.6.2 -f https://download.openmmlab.com/mmcv/dist/{cu121}/{torch2.4.1}/index.html
+
+# add head file search directories 
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:/home/step/anaconda3/envs/magic-drive/include
+export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/home/step/anaconda3/envs/magic-drive/include
+# add shared library searching directories
+export LIBRARY_PATH=$LIBRARY_PATH:/home/step/anaconda3/envs/magic-drive/lib
+# add runtime library searching directories
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/step/anaconda3/envs/magic-drive/lib
+
+# 在无xformer条件下运行demo/run.py
+python demo/run.py resume_from_checkpoint=pretrained/SDv1.5mv-rawbox_2023-09-07_18-39_224x400 ++runner.enable_xformers_memory_efficient_attention=false
+
+# 生成mmdet3d annotations
+python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./data/nuscenes_mmdet3d_2 --extra-tag nuscenes
+
+# 模型训练
+accelerate launch --mixed_precision fp16 --gpu_ids all --num_processes 8 tools/train.py +exp=224x400 runner=8gpus
+
+# 训练debug
+accelerate launch --mixed_precision fp16 --gpu_ids all --num_processes 1 tools/train.py +exp=224x400 runner=debug runner.validation_before_run=true

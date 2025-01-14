@@ -54,3 +54,8 @@ class FolderSetWrapper(torch.utils.data.DataLoader):
 
     def __len__(self):
         return len(self.dataset)
+    
+    # 用于查看key of data
+    def get_data(self, idx):
+        data = torch.load(self.dataset[idx])
+        return data
