@@ -22,3 +22,10 @@ accelerate launch --mixed_precision fp16 --gpu_ids all --num_processes 8 tools/t
 
 # 训练debug
 accelerate launch --mixed_precision fp16 --gpu_ids all --num_processes 1 tools/train.py +exp=224x400 runner=debug runner.validation_before_run=true
+
+# 设置cuda版本
+export PATH=/usr/local/cuda-11.1/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64:$LD_LIBRARY_PATH
+
+# 建立数据集软链接
+ln -s /share/home/tj12067/dataset/VAD/data /share/home/tj12067/yyr/scenario_generation/data
